@@ -29,11 +29,13 @@ const userSchema = new mongoose.Schema({
   username: String,
   email: {
     type: String,
-    unique: true,
+    unique: true
   },
   password: String,
   role: String,
 });
+
+
 const accountSchema = new mongoose.Schema({
   userId: mongoose.Schema.Types.ObjectId,
   balance: Number,
@@ -54,6 +56,13 @@ const Account = mongoose.model("Account", accountSchema);
 app.post("/register", async (req, res) => {
   try {
     const { email, password, userType, role } = req.body;
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ error: "User with this email already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -145,7 +154,7 @@ app.post("/deposit", verifyToken, async (req, res) => {
 
   try {
     const userId = req.userId;
-    
+
     console.log("User ID:", userId); // Log the user ID
 
     const account = await Account.findOne({ userId });
