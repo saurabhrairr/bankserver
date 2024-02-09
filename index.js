@@ -82,6 +82,19 @@ app.post("/register", async (req, res) => {
   }
 });
 
+
+app.get("/user/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+    const user = await User.findOne({ email });
+    res.json({ exists: !!user }); // Send true if user exists, false otherwise
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 // Customer login endpoint
 app.post("/login/customer", async (req, res) => {
   const { email, password } = req.body;
